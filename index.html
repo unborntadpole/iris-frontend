@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Iris Classifier</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f9f4;
+      color: #333;
+      text-align: center;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #4a8f5c;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: inline-block;
+      text-align: left;
+      background-color: #ffffff;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin: 12px 0;
+      font-weight: bold;
+    }
+
+    input {
+      padding: 6px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #4a8f5c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #3c744c;
+    }
+
+    #result {
+      margin-top: 30px;
+      font-size: 20px;
+      color: #2d6042;
+    }
+  </style>
+</head>
+<body>
+  <h1>Iris Species Predictor 🌸</h1>
+  <form id="irisForm">
+    <label>Sepal Length: <input type="number" step="any" name="sepal_length" value=5.1 required></label>
+    <label>Sepal Width: <input type="number" step="any" name="sepal_width" value=3.5 required></label>
+    <label>Petal Length: <input type="number" step="any" name="petal_length" value=1.4 required></label>
+    <label>Petal Width: <input type="number" step="any" name="petal_width" value=0.2 required></label>
+    <button type="submit">Predict</button>
+  </form>
+
+  <h2 id="result"></h2>
+
+  <script>
+    document.getElementById("irisForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(event.target);
+      const data = {
+        sepal_length: parseFloat(formData.get("sepal_length")),
+        sepal_width: parseFloat(formData.get("sepal_width")),
+        petal_length: parseFloat(formData.get("petal_length")),
+        petal_width: parseFloat(formData.get("petal_width"))
+      };
+
+      const classMap = {
+        0: "Setosa",
+        1: "Versicolor",
+        2: "Virginica"
+      };
+
+      try {
+        const response = await fetch("http://localhost:8000/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        const species = classMap[result.predicted_class] || "Unknown Species";
+        document.getElementById("result").innerText = `🌿 Predicted Species: ${species}`;
+      } catch (error) {
+        document.getElementById("result").innerText = "❌ Error: " + error;
+      }
+    });
+  </script>
+</body>
+</html>
